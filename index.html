@@ -1,57 +1,78 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>GitHub - Authentication Required</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Verification Required</title>
     <style>
-        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif; background-color: #f6f8fa; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
-        .captcha-box { background: white; border: 1px solid #d0d7de; border-radius: 6px; padding: 24px; box-shadow: 0 8px 24px rgba(149,157,165,0.2); text-align: center; width: 300px; }
-        .checkbox-container { display: flex; align-items: center; justify-content: center; border: 1px solid #ccc; padding: 15px; background: #fafafa; cursor: pointer; border-radius: 3px; }
-        .checkbox { width: 24px; height: 24px; border: 2px solid #c1c1c1; margin-right: 10px; background: white; }
-        .text { font-size: 14px; color: #555; font-weight: 500; }
-        h2 { font-size: 16px; margin-bottom: 20px; color: #24292f; }
-        #scare-text { display: none; font-size: 50px; font-weight: bold; color: red; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: black; display: none; flex-direction: column; justify-content: center; align-items: center; z-index: 999; }
+        body { font-family: -apple-system, system-ui, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background-color: #f0f2f5; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; overflow: hidden; }
+        .card { background: white; padding: 30px; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); text-align: center; width: 90%; max-width: 350px; transition: 0.3s; }
+        h2 { font-size: 18px; color: #1c1e21; margin-bottom: 20px; }
+        .captcha-btn { display: flex; align-items: center; justify-content: flex-start; border: 1px solid #dcdcdc; padding: 12px; background: #f9f9f9; border-radius: 3px; cursor: pointer; user-select: none; }
+        .checkbox { width: 24px; height: 24px; border: 2px solid #c1c1c1; margin-right: 15px; background: white; display: flex; align-items: center; justify-content: center; font-weight: bold; }
+        .label { font-size: 14px; color: #555; }
+        #scare { display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: black; z-index: 9999; flex-direction: column; justify-content: center; align-items: center; color: white; text-align: center; }
+        h1 { font-size: 60px; margin: 0; text-transform: uppercase; letter-spacing: 5px; }
     </style>
 </head>
 <body>
 
-<div class="captcha-box" id="main-box">
-    <h2>Verify your session</h2>
-    <div class="checkbox-container" onclick="startPrank()">
-        <div class="checkbox" id="check"></div>
-        <div class="text">I'm not a robot</div>
+    <div class="card" id="mainCard">
+        <h2>Security Check</h2>
+        <div class="captcha-btn" onclick="triggerPrank()">
+            <div class="checkbox" id="cb"></div>
+            <div class="label">I'm not a robot</div>
+        </div>
+        <div style="margin-top: 15px; font-size: 10px; color: #999;">reCAPTCHA v3 Privacy - Terms</div>
     </div>
-    <img src="https://www.gstatic.com/recaptcha/api2/logo_48.png" style="width:30px; margin-top:15px;">
-</div>
 
-<div id="scare-text">
-    <h1 style="color: white;">APRIL FOOLS!</h1>
-</div>
+    <div id="scare">
+        <h1 id="flashText">APRIL<br>FOOLS!</h1>
+    </div>
 
-<audio id="alarm" src="https://www.myinstants.com/media/sounds/earrape-meme-v2.mp3" loop></audio>
+    <audio id="alarm" loop>
+        <source src="data:audio/wav;base64,UklGRjIAAABXQVZFZm10IBAAAAABAAEAIlYAAESsAAACABAAZGF0YRAAAAAA//8BAAD//wEA//8BAAD//wEA" type="audio/wav">
+    </audio>
 
-<script>
-    function startPrank() {
-        const audio = document.getElementById('alarm');
-        const box = document.getElementById('main-box');
-        const scare = document.getElementById('scare-text');
-        
-        // Check the box visually
-        document.getElementById('check').style.backgroundColor = '#4CAF50';
-        document.getElementById('check').innerHTML = '✔';
-        document.getElementById('check').style.color = 'white';
+    <script>
+        // High-reliability Audio Context for Mobile
+        const audio = new Audio("https://www.myinstants.com/media/sounds/mlg-airhorn.mp3");
+        audio.preload = "auto";
 
-        // Blast Audio (Interaction unlocks this on iPhone)
-        audio.volume = 1.0;
-        audio.play();
+        function triggerPrank() {
+            // 1. Visual Feedback
+            document.getElementById('cb').innerHTML = "✔";
+            document.getElementById('cb').style.color = "white";
+            document.getElementById('cb').style.backgroundColor = "#4CAF50";
+            document.getElementById('cb').style.borderColor = "#4CAF50";
 
-        // Visual Scare
-        setTimeout(() => {
-            box.style.display = 'none';
-            scare.style.display = 'flex';
-        }, 300);
-    }
-</script>
+            // 2. Audio Injection (Bypasses Autoplay Blocks)
+            audio.volume = 1.0;
+            const playPromise = audio.play();
 
+            if (playPromise !== undefined) {
+                playPromise.catch(error => {
+                    console.log("Audio blocked. Usually happens if user didn't touch the screen.");
+                });
+            }
+
+            // 3. The Visual "Attack"
+            setTimeout(() => {
+                document.getElementById('mainCard').style.display = 'none';
+                const scareDiv = document.getElementById('scare');
+                scareDiv.style.display = 'flex';
+
+                // Flashing Background Effect
+                setInterval(() => {
+                    scareDiv.style.backgroundColor = scareDiv.style.backgroundColor === 'red' ? 'black' : 'red';
+                }, 100);
+
+                // Vibration for Android users
+                if ("vibrate" in navigator) {
+                    navigator.vibrate([500, 110, 500, 110, 450, 110, 200, 110, 170, 40, 450, 110, 200, 110, 170, 40]);
+                }
+            }, 300);
+        }
+    </script>
 </body>
 </html>
